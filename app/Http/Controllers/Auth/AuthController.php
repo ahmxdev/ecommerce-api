@@ -57,5 +57,15 @@ class AuthController
             'message' => 'Logged out successfully'
         ], 200);
     }
-    public function me(Request $request) {}
+    public function me(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ], 200);
+    }
 }
