@@ -2,10 +2,13 @@
 
 use App\Models\Brand;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\deleteJson;
+
+uses(RefreshDatabase::class);
 
 test('authenticated user can delete a brand', function () {
     $user = User::factory()->create();
