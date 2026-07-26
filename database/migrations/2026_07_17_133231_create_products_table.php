@@ -23,34 +23,39 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
-        DB::statement("
-        ALTER TABLE products
-        ADD CONSTRAINT chk_price
-        CHECK (price >= 0)
-        ");
 
-        DB::statement("
-        ALTER TABLE products
-        ADD CONSTRAINT chk_stock
-        CHECK (stock >= 0)
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+            ALTER TABLE products
+            ADD CONSTRAINT chk_price
+            CHECK (price >= 0)
+            ");
+
+            DB::statement("
+            ALTER TABLE products
+            ADD CONSTRAINT chk_stock
+            CHECK (stock >= 0)
+            ");
+        }
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        DB::statement("
-            ALTER TABLE products
-            DROP CHECK chk_price
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE products
+                DROP CHECK chk_price
+            ");
 
-        DB::statement("
-            ALTER TABLE products
-            DROP CHECK chk_stock
-        ");
-
+            DB::statement("
+                ALTER TABLE products
+                DROP CHECK chk_stock
+            ");
+        }
         Schema::dropIfExists('products');
     }
 };

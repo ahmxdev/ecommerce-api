@@ -22,11 +22,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::statement("
-            ALTER TABLE reviews
-            ADD CONSTRAINT chk_stars
-            CHECK (stars BETWEEN 1 AND 5)
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE reviews
+                ADD CONSTRAINT chk_stars
+                CHECK (stars BETWEEN 1 AND 5)
+            ");
+        }
     }
 
     /**
@@ -34,10 +36,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("
-            ALTER TABLE reviews
-            DROP CHECK chk_stars
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE reviews
+                DROP CHECK chk_stars
+            ");
+        }
         Schema::dropIfExists('reviews');
     }
 };
