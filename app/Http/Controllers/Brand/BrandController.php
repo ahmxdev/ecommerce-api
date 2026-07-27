@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Brands;
+namespace App\Http\Controllers\Brand;
 
-use App\Http\Requests\Brands\StoreBrandRequest;
-use App\Http\Requests\Brands\UpdateBrandRequest;
-use App\Http\Resources\Brands\BrandResource;
+use App\Http\Requests\Brand\StoreBrandRequest;
+use App\Http\Requests\Brand\UpdateBrandRequest;
+use App\Http\Resources\Brand\BrandResource;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 

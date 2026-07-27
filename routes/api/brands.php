@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Brands\BrandController;
+use App\Http\Controllers\Brand\BrandController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
