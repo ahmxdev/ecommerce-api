@@ -22,9 +22,16 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)
+            ->where('is_primary', true);
+    }
+
+
     public function categories()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class, 'product_category');
     }
 
 
