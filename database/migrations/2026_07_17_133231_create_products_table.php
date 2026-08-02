@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('price', 8, 2); // CHECK (price >= 0)
             $table->integer('stock'); // CHECK (stock >= 0)
             $table->text('description')->nullable();
+            $table->string('image_path')->nullable();
             $table->foreignId('brand_id')->constrained('brands')->restrictOnDelete();
             $table->softDeletes();
             $table->timestamps();

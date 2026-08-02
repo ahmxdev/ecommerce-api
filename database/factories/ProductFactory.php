@@ -28,6 +28,7 @@ class ProductFactory extends Factory
             'stock' => fake()->numberBetween(0, 1000),
             'description' => fake()->optional()->paragraph(),
             'brand_id' => Brand::factory(),
+            'image_path' => fake()->filePath()
         ];
     }
 }

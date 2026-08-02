@@ -3,6 +3,7 @@
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 use function Pest\Laravel\getJson;
@@ -26,10 +27,12 @@ test('authinticated user can list products', function () {
                 'name',
                 'price',
                 'stock',
-                'image'
+                'image_url'
             ]
         ]
     ]);
+    $product = Product::first();
+    $response->assertJsonPath('data.0.image_url', Storage::url($product->image_path));
 });
 
 test('guest cannot list products', function () {
@@ -37,11 +40,6 @@ test('guest cannot list products', function () {
 
     $response->assertUnauthorized();
 });
-
-test('product includes primary image', function () {
-    // IMAGES
-});
-
 
 test('empty product list', function () {
     $user = User::factory()->create();

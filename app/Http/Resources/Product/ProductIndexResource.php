@@ -4,6 +4,7 @@ namespace App\Http\Resources\Product;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class ProductIndexResource extends JsonResource
 {
@@ -19,10 +20,7 @@ class ProductIndexResource extends JsonResource
             'name' => $this->name,
             'price' => $this->price,
             'stock' => $this->stock,
-            'image' => $this->when(
-                $this->relationLoaded('primaryImage'),
-                fn() => $this->primaryImage?->image_path
-            ) // IMAGES
+            'image_url' => Storage::url($this->image_path),
         ];
     }
 }

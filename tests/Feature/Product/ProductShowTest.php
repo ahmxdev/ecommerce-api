@@ -15,7 +15,6 @@ test('authinticated user can show a product and load its relations', function ()
     Sanctum::actingAs($user);
 
     $category = Category::factory()->create();
-    // IMAGES
     $product = Product::factory()->create();
     $product->categories()->sync($category->id);
 
@@ -32,7 +31,7 @@ test('authinticated user can show a product and load its relations', function ()
             'stock',
             'brand',
             'categories',
-            'images'
+            'image_url'
         ]
     ]);
 });

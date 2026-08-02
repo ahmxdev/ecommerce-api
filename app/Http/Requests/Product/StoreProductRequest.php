@@ -32,7 +32,13 @@ class StoreProductRequest extends FormRequest
             'brand_id' => ['bail', 'required', Rule::exists('brands', 'id')],
             'categories' => ['bail', 'required', 'array', 'min:1'],
             'categories.*' => ['bail', 'integer', 'distinct', Rule::exists('categories', 'id')],
-            /* 'IMAGES' => [....] */
+            'image' => [
+                'bail',
+                'required',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
         ];
     }
 }

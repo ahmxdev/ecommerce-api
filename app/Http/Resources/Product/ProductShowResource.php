@@ -6,6 +6,7 @@ use App\Http\Resources\Brand\BrandResource;
 use App\Http\Resources\Category\CategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class ProductShowResource extends JsonResource
 {
@@ -24,7 +25,7 @@ class ProductShowResource extends JsonResource
             'stock' => $this->stock,
             'brand' => new BrandResource($this->whenLoaded('brand')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
-            'images' => [], // IMAGES
+            'image_url' => Storage::url($this->image_path),
         ];
     }
 }

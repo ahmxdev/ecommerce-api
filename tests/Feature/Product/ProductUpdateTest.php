@@ -5,6 +5,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 use function Pest\Laravel\assertDatabaseHas;
@@ -16,28 +18,33 @@ uses(RefreshDatabase::class);
 test('authinticated user can update a product', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
+    Storage::fake('public');
 
     $brand1 = Brand::factory()->create();
     $brand2 = Brand::factory()->create();
-    $categories = Category::factory()->count(2)->create();
+    $category1 = Category::factory()->create();
+    $category2 = Category::factory()->create();
+
     $product = Product::create([
         'name' => 'M',
         'description' => '',
+        'image_path' => '/dir/photo.png',
         'slug' => 'm',
         'price' => 10,
         'stock' => 5,
         'brand_id' => $brand1->id,
     ]);
-    $product->categories()->sync($categories[0]->id);
+    $product->categories()->sync($category1->id);
 
     $data = [
         'name' => 'Mouse name',
         'description' => '',
+        'image' => UploadedFile::fake()->image('mouse.jpg'),
         'slug' => 'mouse-name',
         'price' => 100,
         'stock' => 50,
         'brand_id' => $brand2->id,
-        'categories' => [$categories[1]->id],
+        'categories' => [$category2->id],
     ];
 
     $response = putJson("/api/admin/products/{$product->id}", $data);
@@ -46,11 +53,16 @@ test('authinticated user can update a product', function () {
     assertDatabaseHas('products', [
         'name' => $data['name']
     ]);
+    $product = Product::first();
     assertDatabaseHas('product_category', [
+        'product_id' => $product->id,
         'category_id' => $data['categories'][0],
-        'product_id' => $product->id
     ]);
     $response->assertJsonPath('data.name', $data['name']);
+    $response->assertJsonFragment([
+        'name' => $data['name'],
+        'image_url' => Storage::url($product->image_path)
+    ]);
 });
 
 test('guest cannot update a product', function () {
