@@ -24,4 +24,13 @@ class Coupon extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'is_active' => 'boolean',
+        ];
+    }
 }
