@@ -2,6 +2,7 @@
 
 namespace App\Services\Order;
 
+use App\Exceptions\BusinessException;
 use App\Models\Order;
 
 class OrderStatusService
@@ -18,7 +19,7 @@ class OrderStatusService
         ];
 
         if (!in_array($newStatus, $allowedTransitions[$currentStatus], true)) {
-            throw new \Exception('Invalid order status transition.');
+            throw new BusinessException('Invalid order status transition.');
         }
 
         $order->update([

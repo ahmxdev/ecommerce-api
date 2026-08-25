@@ -148,7 +148,7 @@ test('cannot checkout with an empty cart', function () {
     $response = postJson('/api/orders', [
         'address_id' => $address->id,
     ]);
-    $response->assertServerError();
+    $response->assertUnprocessable();
 });
 
 test('cannot checkout when stock is insufficient', function () {
@@ -182,13 +182,12 @@ test('cannot checkout when stock is insufficient', function () {
         'address_id' => $address->id,
     ]);
 
-    $response->assertServerError();
+    $response->assertUnprocessable();
     assertDatabaseHas('products', [
         'id' => $product->id,
         'stock' => 1,
     ]);
 });
-
 
 test('cannot checkout with an invalid coupon', function (array $couponData) {
     $user = User::factory()->create();
@@ -225,7 +224,7 @@ test('cannot checkout with an invalid coupon', function (array $couponData) {
         'coupon_id' => $coupon->id,
     ]);
 
-    $response->assertServerError();
+    $response->assertUnprocessable();
 })->with([
     'inactive coupon' => [
         [
@@ -241,7 +240,6 @@ test('cannot checkout with an invalid coupon', function (array $couponData) {
         ],
     ],
 ]);
-
 
 test('cannot checkout using another user address', function () {
     $user = User::factory()->create();
@@ -275,7 +273,7 @@ test('cannot checkout using another user address', function () {
         'address_id' => $address->id,
     ]);
 
-    $response->assertServerError();
+    $response->assertNotFound();
     assertDatabaseMissing('orders', [
         'user_id' => $user->id,
     ]);

@@ -2,10 +2,12 @@
 
 namespace App\Services\Order;
 
+use App\Exceptions\BusinessException;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class CheckoutService
@@ -14,20 +16,17 @@ class CheckoutService
     {
         return DB::transaction(function () use ($user, $addressId, $couponId) {
             // ADDRESS
-            $address = $user->addresses()->find($addressId);
-            if (! $address) {
-                throw new \Exception('Address not found.');
-            }
+            $address = $user->addresses()->findOrFail($addressId);
 
             // CART
             $cart = $user->cart;
             if (! $cart) {
-                throw new \Exception('Cart not found.');
+                throw new BusinessException('Cart not found.');
             }
 
             $cart->load('items');
             if ($cart->items->isEmpty()) {
-                throw new \Exception('Cart is empty.');
+                throw new BusinessException('Cart is empty.');
             }
 
             // SUB_TOTAL CALCULATION
@@ -40,10 +39,10 @@ class CheckoutService
                 $products->put($item->product_id, $product);
 
                 if (! $product) {
-                    throw new \Exception('Product no longer exists.');
+                    throw new BusinessException('Product no longer exists.');
                 }
                 if ($item->quantity > $product->stock) {
-                    throw new \Exception("Insufficient stock for product: {$product->name}");
+                    throw new BusinessException("Insufficient stock for product: {$product->name}");
                 }
                 $subtotal += $product->price * $item->quantity;
             }
@@ -54,7 +53,7 @@ class CheckoutService
             if ($couponId) {
                 $coupon = Coupon::findOrFail($couponId);
                 if (! $coupon->is_active || $coupon->expires_at->isPast()) {
-                    throw new \Exception('Coupon is not valid.');
+                    throw new BusinessException('Coupon is not valid.');
                 }
 
                 $discountAmount = $subtotal * ($coupon->discount_percentage / 100);

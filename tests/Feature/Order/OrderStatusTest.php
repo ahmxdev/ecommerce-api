@@ -64,7 +64,7 @@ test('cannot update order to an invalid status transition', function () {
         'status' => 'delivered',
     ]);
 
-    $response->assertStatus(500);
+    $response->assertUnprocessable();
 
     expect($order->fresh()->status)->toBe('pending');
 });
