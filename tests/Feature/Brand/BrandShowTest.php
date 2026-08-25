@@ -14,7 +14,7 @@ test('authenticated user can view a brand', function () {
     Sanctum::actingAs($user);
     $brand = Brand::factory()->create();
 
-    $response = getJson("/api/admin/brands/{$brand->id}");
+    $response = getJson("/api/brands/{$brand->id}");
 
     $response->assertOk();
     $response->assertJsonPath('data.id', $brand->id);
@@ -25,13 +25,13 @@ test('authenticated user gets 404 when the brand does not exist.', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
-    $response = getJson("/api/admin/brands/999999");
+    $response = getJson("/api/brands/999999");
 
     $response->assertNotFound();
 });
 
 test('guest cannot view a brand', function () {
-    $response = getJson('/api/admin/brands');
+    $response = getJson('/api/brands');
 
     $response->assertUnauthorized();
 });

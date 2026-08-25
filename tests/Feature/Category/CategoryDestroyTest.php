@@ -15,7 +15,7 @@ test('authenticated user can delete a category', function () {
     Sanctum::actingAs($user);
     $category = Category::factory()->create();
 
-    $response = deleteJson("/api/admin/categories/{$category->id}");
+    $response = deleteJson("/api/categories/{$category->id}");
 
     $response->assertNoContent();
     assertDatabaseMissing('categories', [
@@ -25,7 +25,7 @@ test('authenticated user can delete a category', function () {
 
 test('guest cannot delete a category', function () {
 
-    $response = deleteJson("/api/admin/categories/1");
+    $response = deleteJson("/api/categories/1");
 
     $response->assertUnauthorized();
 });
@@ -38,7 +38,7 @@ test('cannot delete a category has children', function () {
         'parent_id' => $category->id
     ]);
 
-    $response = deleteJson("/api/admin/categories/{$category->id}");
+    $response = deleteJson("/api/categories/{$category->id}");
 
     $response->assertConflict();
 });
@@ -47,7 +47,7 @@ test('cannot delete a not-existing category', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
-    $response = deleteJson("/api/admin/categories/99999");
+    $response = deleteJson("/api/categories/99999");
 
     $response->assertNotFound();
 });

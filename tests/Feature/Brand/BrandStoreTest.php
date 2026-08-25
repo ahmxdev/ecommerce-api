@@ -18,7 +18,7 @@ test('authenticated user can create a brand', function () {
         'name' => 'ASUS',
     ];
 
-    $response = postJson('/api/admin/brands', $data);
+    $response = postJson('/api/brands', $data);
 
     $response->assertCreated();
     assertDatabaseHas('brands', [
@@ -32,7 +32,7 @@ test('guest cannot create a brand', function () {
         'name' => 'ASUS',
     ];
 
-    $response = postJson('/api/admin/brands', $data);
+    $response = postJson('/api/brands', $data);
 
     $response->assertUnauthorized();
 });
@@ -43,7 +43,7 @@ test('validation fails when name is missing', function () {
 
     $data = [];
 
-    $response = postJson('/api/admin/brands', $data);
+    $response = postJson('/api/brands', $data);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors(['name']);
@@ -61,7 +61,7 @@ test('validation fails when name already exists', function () {
         'name' => $data['name']
     ]);
 
-    $response = postJson('/api/admin/brands', $data);
+    $response = postJson('/api/brands', $data);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors(['name']);

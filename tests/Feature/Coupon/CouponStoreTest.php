@@ -23,7 +23,7 @@ test('authenticated user can create a coupon', function () {
         'expires_at' => now()->addMonth()->toDateTimeString(),
     ];
 
-    $response = postJson('/api/admin/coupons', $data);
+    $response = postJson('/api/coupons', $data);
 
     $response->assertCreated();
 
@@ -43,7 +43,7 @@ test('authenticated user can create a coupon', function () {
 
 
 test('guest cannot create a coupon', function () {
-    $response = postJson('/api/admin/coupons', []);
+    $response = postJson('/api/coupons', []);
 
     $response->assertUnauthorized();
 });

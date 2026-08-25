@@ -15,7 +15,7 @@ test('authenticated user can list categories', function () {
 
     $categories = Category::factory()->count(3)->create();
 
-    $response = getJson('/api/admin/categories');
+    $response = getJson('/api/categories');
 
     $response->assertOk();
     $response->assertJsonCount(3, 'data');
@@ -31,7 +31,7 @@ test('authenticated user can list categories', function () {
 });
 
 test('guest cannot list categories', function () {
-    $response = getJson('/api/admin/categories');
+    $response = getJson('/api/categories');
 
     $response->assertUnauthorized();
 });

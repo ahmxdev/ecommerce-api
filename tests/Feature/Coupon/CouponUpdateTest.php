@@ -27,7 +27,7 @@ test('authenticated user can update a coupon', function () {
         'expires_at' => $expiresAt->toDateTimeString(),
     ];
 
-    $response = putJson("/api/admin/coupons/{$coupon->id}", $data);
+    $response = putJson("/api/coupons/{$coupon->id}", $data);
 
     $response->assertOk();
 
@@ -47,7 +47,7 @@ test('authenticated user can update a coupon', function () {
 
 
 test('guest cannot update a coupon', function () {
-    $response = putJson('/api/admin/coupons/1', []);
+    $response = putJson('/api/coupons/1', []);
 
     $response->assertUnauthorized();
 });

@@ -16,7 +16,7 @@ test('authinticated user can list products', function () {
 
     Product::factory()->count(5)->create();
 
-    $response = getJson('/api/admin/products');
+    $response = getJson('/api/products');
 
     $response->assertOk();
     $response->assertJsonCount(5, 'data');
@@ -36,7 +36,7 @@ test('authinticated user can list products', function () {
 });
 
 test('guest cannot list products', function () {
-    $response = getJson('/api/admin/products');
+    $response = getJson('/api/products');
 
     $response->assertUnauthorized();
 });
@@ -45,7 +45,7 @@ test('empty product list', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
-    $response = getJson('/api/admin/products');
+    $response = getJson('/api/products');
 
     $response->assertOk();
     $response->assertJsonCount(0, 'data');

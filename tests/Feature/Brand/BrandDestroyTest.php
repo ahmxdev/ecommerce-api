@@ -15,7 +15,7 @@ test('authenticated user can delete a brand', function () {
     Sanctum::actingAs($user);
     $brand = Brand::factory()->create();
 
-    $response = deleteJson("/api/admin/brands/{$brand->id}");
+    $response = deleteJson("/api/brands/{$brand->id}");
 
     $response->assertNoContent();
     assertDatabaseMissing('brands', [
@@ -26,7 +26,7 @@ test('authenticated user can delete a brand', function () {
 test('guest cannot delete a brand', function () {
     $brand = Brand::factory()->create();
 
-    $response = deleteJson("/api/admin/brands/{$brand->id}");
+    $response = deleteJson("/api/brands/{$brand->id}");
 
     $response->assertUnauthorized();
 });
@@ -35,7 +35,7 @@ test('authenticated user gets 404 when deleting a non existing brand', function 
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
-    $response = deleteJson("/api/admin/brands/99999");
+    $response = deleteJson("/api/brands/99999");
 
     $response->assertNotFound();
 });

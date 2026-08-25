@@ -30,7 +30,7 @@ test('authenticated user can update a category', function () {
         'parent_id' => $parent2->id
     ];
 
-    $response = putJson("/api/admin/categories/{$category->id}", $data);
+    $response = putJson("/api/categories/{$category->id}", $data);
 
     $response->assertOk();
     assertDatabaseHas('categories', [
@@ -46,7 +46,7 @@ test('guest cannot update a category', function () {
         'name' => 'GPUs',
     ];
 
-    $response = putJson("/api/admin/categories/1", $data);
+    $response = putJson("/api/categories/1", $data);
 
     $response->assertUnauthorized();
 });
@@ -66,7 +66,7 @@ test('a category cannot be a child of its children', function () {
         'parent_id' => $category->id
     ];
 
-    $response = putJson("/api/admin/categories/{$parent->id}", $data);
+    $response = putJson("/api/categories/{$parent->id}", $data);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors([
@@ -86,7 +86,7 @@ test('cannot update a not-existing category', function () {
         'name' => 'new name'
     ];
 
-    $response = putJson("/api/admin/categories/99999", $data);
+    $response = putJson("/api/categories/99999", $data);
 
     $response->assertNotFound();
 });

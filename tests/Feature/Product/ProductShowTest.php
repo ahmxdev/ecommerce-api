@@ -18,7 +18,7 @@ test('authinticated user can show a product and load its relations', function ()
     $product = Product::factory()->create();
     $product->categories()->sync($category->id);
 
-    $response = getJson("/api/admin/products/{$product->id}");
+    $response = getJson("/api/products/{$product->id}");
 
     $response->assertOk();
     $response->assertJsonPath('data.id', $product->id);
@@ -37,7 +37,7 @@ test('authinticated user can show a product and load its relations', function ()
 });
 
 test('guest cannot show a product', function () {
-    $response = getJson("/api/admin/products/1");
+    $response = getJson("/api/products/1");
 
     $response->assertUnauthorized();
 });
@@ -46,7 +46,7 @@ test('showing a non-existing product returns 404', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
-    $response = getJson("/api/admin/products/99999");
+    $response = getJson("/api/products/99999");
 
     $response->assertNotFound();
 });

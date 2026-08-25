@@ -15,7 +15,7 @@ test('authenticated user can list brands', function () {
     Sanctum::actingAs($user);
     $brands = Brand::factory()->count(5)->create();
 
-    $response = getJson('/api/admin/brands');
+    $response = getJson('/api/brands');
     $response->assertOk();
     $response->assertJsonCount(5, 'data');
     $response->assertJsonStructure([
@@ -32,7 +32,7 @@ test('authenticated user can list brands', function () {
 });
 
 test('guest cannot list brands', function () {
-    $response = $this->getJson('/api/admin/brands');
+    $response = $this->getJson('/api/brands');
 
     $response->assertUnauthorized();
 });

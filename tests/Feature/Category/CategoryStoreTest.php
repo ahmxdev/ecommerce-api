@@ -21,7 +21,7 @@ test('authenticated user can create a category', function () {
         'parent_id' => $parent->id
     ];
 
-    $response = postJson('/api/admin/categories', $data);
+    $response = postJson('/api/categories', $data);
 
     $response->assertCreated();
     assertDatabaseHas('categories', [
@@ -38,7 +38,7 @@ test('guest cannot create a category', function () {
         // parent_id is nullable
     ];
 
-    $response = postJson('/api/admin/categories', $data);
+    $response = postJson('/api/categories', $data);
 
     $response->assertUnauthorized();
 });
@@ -49,7 +49,7 @@ test('validation fails when name is missing', function () {
 
     $data = [];
 
-    $response = postJson('/api/admin/categories', $data);
+    $response = postJson('/api/categories', $data);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors(['name']);
@@ -68,7 +68,7 @@ test('validation fails when name already exists', function () {
         'name' => $data['name']
     ]);
 
-    $response = postJson('/api/admin/categories', $data);
+    $response = postJson('/api/categories', $data);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors(['name']);
@@ -83,7 +83,7 @@ test('parent is nullable', function () {
         // parent_id is nullable
     ];
 
-    $response = postJson('/api/admin/categories', $data);
+    $response = postJson('/api/categories', $data);
 
     $response->assertCreated();
 });
@@ -97,7 +97,7 @@ test('parent_id must exist', function () {
         'parent_id' => 999999
     ];
 
-    $response = postJson('/api/admin/categories', $data);
+    $response = postJson('/api/categories', $data);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors(['parent_id']);

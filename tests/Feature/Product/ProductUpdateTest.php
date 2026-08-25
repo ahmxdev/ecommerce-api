@@ -47,7 +47,7 @@ test('authinticated user can update a product', function () {
         'categories' => [$category2->id],
     ];
 
-    $response = putJson("/api/admin/products/{$product->id}", $data);
+    $response = putJson("/api/products/{$product->id}", $data);
 
     $response->assertOk();
     assertDatabaseHas('products', [
@@ -66,7 +66,7 @@ test('authinticated user can update a product', function () {
 });
 
 test('guest cannot update a product', function () {
-    $response = putJson("/api/admin/products/1", []);
+    $response = putJson("/api/products/1", []);
 
     $response->assertUnauthorized();
 });

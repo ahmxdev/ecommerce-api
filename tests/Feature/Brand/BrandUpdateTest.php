@@ -22,7 +22,7 @@ test('authenticated user can update a brand', function () {
         'name' => 'DELL'
     ]);
 
-    $response = putJson("/api/admin/brands/{$brand->id}", $data);
+    $response = putJson("/api/brands/{$brand->id}", $data);
 
     $response->assertOk();
     assertDatabaseHas('brands', [
@@ -43,7 +43,7 @@ test('authenticated user can keep the same brand name', function () {
         'name' => 'ASUS'
     ]);
 
-    $response = putJson("/api/admin/brands/{$brand->id}", $data);
+    $response = putJson("/api/brands/{$brand->id}", $data);
 
     $response->assertOk();
     assertDatabaseHas('brands', [
@@ -68,7 +68,7 @@ test('validation fails when updating to an existing brand name', function () {
         'name' => 'DELL'
     ]);
 
-    $response = putJson("/api/admin/brands/{$brand->id}", $data);
+    $response = putJson("/api/brands/{$brand->id}", $data);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors([
@@ -82,7 +82,7 @@ test('validation fails when name is missing', function () {
 
     $brand = Brand::factory()->create();
 
-    $response = putJson("/api/admin/brands/{$brand->id}", []);
+    $response = putJson("/api/brands/{$brand->id}", []);
 
     $response->assertUnprocessable();
 
@@ -97,7 +97,7 @@ test('guest cannot update a brand', function () {
         'name' => 'ASUS'
     ];
 
-    $response = putJson("/api/admin/brands/{$brand->id}", $data);
+    $response = putJson("/api/brands/{$brand->id}", $data);
 
     $response->assertUnauthorized();
 });

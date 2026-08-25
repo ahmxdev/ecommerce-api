@@ -34,7 +34,7 @@ test('authinticated user can create a product', function () {
         'categories' => $categories->pluck('id')->all(),
     ];
 
-    $response = postJson("/api/admin/products", $data);
+    $response = postJson("/api/products", $data);
 
     $response->assertCreated();
     assertDatabaseHas('products', [
@@ -56,7 +56,7 @@ test('authinticated user can create a product', function () {
 });
 
 test('guest cannot create a product', function () {
-    $response = postJson("/api/admin/products", []);
+    $response = postJson("/api/products", []);
 
     $response->assertUnauthorized();
 });

@@ -18,7 +18,7 @@ test('authinticated user can delete a coupon', function () {
 
     $coupon = Coupon::factory()->create();
 
-    $response = deleteJson("/api/admin/coupons/{$coupon->id}");
+    $response = deleteJson("/api/coupons/{$coupon->id}");
 
     $response->assertNoContent();
     assertDatabaseMissing('coupons', [
@@ -28,7 +28,7 @@ test('authinticated user can delete a coupon', function () {
 
 test('guest cannot delete a coupon', function () {
 
-    $response = deleteJson("/api/admin/coupons/1");
+    $response = deleteJson("/api/coupons/1");
 
     $response->assertUnauthorized();
 });

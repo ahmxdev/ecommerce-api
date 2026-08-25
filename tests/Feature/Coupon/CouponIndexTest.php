@@ -17,7 +17,7 @@ test('authinticated user can list coupons', function () {
 
     $coupons = Coupon::factory()->count(5)->create();
 
-    $response = getJson('/api/admin/coupons');
+    $response = getJson('/api/coupons');
 
     $response->assertOk();
     $response->assertJsonStructure([
@@ -36,7 +36,7 @@ test('authinticated user can list coupons', function () {
 
 test('guest cannot list coupons', function () {
 
-    $response = getJson('/api/admin/coupons');
+    $response = getJson('/api/coupons');
 
     $response->assertUnauthorized();
 });

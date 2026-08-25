@@ -21,7 +21,7 @@ test('authenticated user can delete a product', function () {
         'image_path' => UploadedFile::fake()->image('photo.png')->store('products', 'public')
     ]);
 
-    $response = deleteJson("/api/admin/products/{$product->id}");
+    $response = deleteJson("/api/products/{$product->id}");
 
     $response->assertNoContent();
     assertDatabaseMissing('products', [
@@ -32,7 +32,7 @@ test('authenticated user can delete a product', function () {
 
 test('guest cannot delete a category', function () {
 
-    $response = deleteJson("/api/admin/products/1");
+    $response = deleteJson("/api/products/1");
 
     $response->assertUnauthorized();
 });
