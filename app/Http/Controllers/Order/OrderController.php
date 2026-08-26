@@ -9,6 +9,7 @@ use App\Http\Resources\Order\OrderShowResource;
 use App\Models\Order;
 use App\Services\Order\CheckoutService;
 use App\Services\Order\OrderStatusService;
+use Illuminate\Support\Facades\Gate;
 
 class OrderController
 {
@@ -41,9 +42,7 @@ class OrderController
     }
     public function show(Order $order)
     {
-        if ($order->user_id !== auth()->id()) {
-            abort(404);
-        }
+        Gate::authorize('view', $order);
 
         $order->load('items');
 

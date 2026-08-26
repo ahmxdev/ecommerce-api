@@ -9,13 +9,12 @@ use function Pest\Laravel\patchJson;
 
 uses(RefreshDatabase::class);
 
-test('user can update their order status through an allowed transition', function () {
-    $user = User::factory()->create();
-
-    Sanctum::actingAs($user);
+test('admin order status through an allowed transition', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $order = Order::factory()->create([
-        'user_id' => $user->id,
+        'user_id' => $admin->id,
         'status' => 'pending',
     ]);
 
@@ -30,33 +29,27 @@ test('user can update their order status through an allowed transition', functio
     expect($order->fresh()->status)->toBe('preparing');
 });
 
-test('user cannot update another user order status', function () {
+test('regular user cannot update an order status', function () {
     $user = User::factory()->create();
-    $otherUser = User::factory()->create();
-
     Sanctum::actingAs($user);
 
-    $order = Order::factory()->create([
-        'user_id' => $otherUser->id,
-        'status' => 'pending',
-    ]);
+    $order = Order::factory()->create();
 
     $response = patchJson("/api/orders/{$order->id}/status", [
         'status' => 'preparing',
     ]);
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 
     expect($order->fresh()->status)->toBe('pending');
 });
 
 test('cannot update order to an invalid status transition', function () {
-    $user = User::factory()->create();
-
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $order = Order::factory()->create([
-        'user_id' => $user->id,
+        'user_id' => $admin->id,
         'status' => 'pending',
     ]);
 
@@ -82,12 +75,11 @@ test('guest cannot update order status', function () {
 });
 
 test('status must be a valid order status', function () {
-    $user = User::factory()->create();
-
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $order = Order::factory()->create([
-        'user_id' => $user->id,
+        'user_id' => $admin->id,
         'status' => 'pending',
     ]);
 
