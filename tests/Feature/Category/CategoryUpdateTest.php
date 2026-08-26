@@ -10,9 +10,9 @@ use function Pest\Laravel\putJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can update a category', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can update a category', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $parent1 = Category::create([
         'name' => 'parent1',
@@ -41,6 +41,23 @@ test('authenticated user can update a category', function () {
     $response->assertJsonPath('data.parent.id', $data['parent_id']);
 });
 
+test('regular user cannot update a category', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $category = Category::create([
+        'name' => 'CPUs',
+    ]);
+
+    $data = [
+        'name' => 'GPUs',
+    ];
+
+    $response = putJson("/api/categories/{$category->id}", $data);
+
+    $response->assertForbidden();
+});
+
 test('guest cannot update a category', function () {
     $data = [
         'name' => 'GPUs',
@@ -52,8 +69,8 @@ test('guest cannot update a category', function () {
 });
 
 test('a category cannot be a child of its children', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $parent = Category::create([
         'name' => 'Computer Parts',
@@ -79,8 +96,8 @@ test('a category cannot be a child of its children', function () {
 });
 
 test('cannot update a not-existing category', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'new name'

@@ -9,9 +9,9 @@ use function Pest\Laravel\getJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can list categories', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can list categories', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $categories = Category::factory()->count(3)->create();
 
@@ -28,6 +28,15 @@ test('authenticated user can list categories', function () {
             ]
         ]
     ]);
+});
+
+test('regular user cannot list categories', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = getJson('/api/categories');
+
+    $response->assertForbidden();
 });
 
 test('guest cannot list categories', function () {

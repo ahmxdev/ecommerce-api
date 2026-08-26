@@ -10,9 +10,10 @@ use function Pest\Laravel\deleteJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can delete a category', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can delete a category', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
     $category = Category::factory()->create();
 
     $response = deleteJson("/api/categories/{$category->id}");
@@ -23,6 +24,17 @@ test('authenticated user can delete a category', function () {
     ]);
 });
 
+test('regular user cannot delete a category', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $category = Category::factory()->create();
+
+    $response = deleteJson("/api/categories/{$category->id}");
+
+    $response->assertForbidden();
+});
+
 test('guest cannot delete a category', function () {
 
     $response = deleteJson("/api/categories/1");
@@ -31,8 +43,9 @@ test('guest cannot delete a category', function () {
 });
 
 test('cannot delete a category has children', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
     $category = Category::factory()->create();
     $child = Category::factory()->create([
         'parent_id' => $category->id
@@ -44,8 +57,8 @@ test('cannot delete a category has children', function () {
 });
 
 test('cannot delete a not-existing category', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $response = deleteJson("/api/categories/99999");
 

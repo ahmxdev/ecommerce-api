@@ -10,9 +10,10 @@ use function Pest\Laravel\getJson;
 uses(RefreshDatabase::class);
 
 
-test('authenticated user can show a category', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can show a category', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
     $category = Category::create([
         'name' => 'CPUs',
     ]);
@@ -28,6 +29,19 @@ test('authenticated user can show a category', function () {
     ]);
 });
 
+test('regular user cannot show a category', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $category = Category::create([
+        'name' => 'CPUs',
+    ]);
+
+    $response = getJson("/api/categories/{$category->id}");
+
+    $response->assertForbidden();
+});
+
 test('guest cannot show a category', function () {
     $response = getJson("/api/categories/1");
 
@@ -35,8 +49,8 @@ test('guest cannot show a category', function () {
 });
 
 test('showing a non-existing category returns 404', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $response = getJson("/api/categories/99999");
 

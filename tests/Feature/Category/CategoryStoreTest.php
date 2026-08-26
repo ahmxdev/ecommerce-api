@@ -10,9 +10,9 @@ use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can create a category', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can create a category', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $parent = Category::factory()->create();
 
@@ -32,6 +32,17 @@ test('authenticated user can create a category', function () {
     $response->assertJsonPath('data.parent.id', $data['parent_id']);
 });
 
+test('regular user cannot create a category', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = postJson('/api/categories', [
+        'name' => 'CPUs',
+    ]);
+
+    $response->assertForbidden();
+});
+
 test('guest cannot create a category', function () {
     $data = [
         'name' => 'CPUs',
@@ -44,8 +55,8 @@ test('guest cannot create a category', function () {
 });
 
 test('validation fails when name is missing', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [];
 
@@ -56,8 +67,8 @@ test('validation fails when name is missing', function () {
 });
 
 test('validation fails when name already exists', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'CPUs',
@@ -75,8 +86,8 @@ test('validation fails when name already exists', function () {
 });
 
 test('parent is nullable', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'CPUs',
@@ -89,8 +100,8 @@ test('parent is nullable', function () {
 });
 
 test('parent_id must exist', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'CPUs',
