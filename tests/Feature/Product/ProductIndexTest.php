@@ -10,9 +10,9 @@ use function Pest\Laravel\getJson;
 
 uses(RefreshDatabase::class);
 
-test('authinticated user can list products', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can list products', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     Product::factory()->count(5)->create();
 
@@ -35,6 +35,15 @@ test('authinticated user can list products', function () {
     $response->assertJsonPath('data.0.image_url', Storage::url($product->image_path));
 });
 
+test('regular user cannot list products', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = getJson('/api/products');
+
+    $response->assertForbidden();
+});
+
 test('guest cannot list products', function () {
     $response = getJson('/api/products');
 
@@ -42,8 +51,8 @@ test('guest cannot list products', function () {
 });
 
 test('empty product list', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $response = getJson('/api/products');
 

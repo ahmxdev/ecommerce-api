@@ -15,9 +15,9 @@ use function Pest\Laravel\postJson;
 uses(RefreshDatabase::class);
 
 
-test('authinticated user can create a product', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can create a product', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     Storage::fake('public');
 
@@ -53,6 +53,15 @@ test('authinticated user can create a product', function () {
         'name' => $data['name'],
         'image_url' => Storage::url($product->image_path)
     ]);
+});
+
+test('regular user cannot create a product', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = postJson("/api/products", []);
+
+    $response->assertForbidden();
 });
 
 test('guest cannot create a product', function () {

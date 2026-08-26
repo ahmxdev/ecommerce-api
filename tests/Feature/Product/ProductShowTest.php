@@ -10,9 +10,9 @@ use function Pest\Laravel\getJson;
 
 uses(RefreshDatabase::class);
 
-test('authinticated user can show a product and load its relations', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can show a product and load its relations', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $category = Category::factory()->create();
     $product = Product::factory()->create();
@@ -36,6 +36,17 @@ test('authinticated user can show a product and load its relations', function ()
     ]);
 });
 
+test('regular user cannot show a product', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $product = Product::factory()->create();
+
+    $response = getJson("/api/products/{$product->id}");
+
+    $response->assertForbidden();
+});
+
 test('guest cannot show a product', function () {
     $response = getJson("/api/products/1");
 
@@ -43,8 +54,8 @@ test('guest cannot show a product', function () {
 });
 
 test('showing a non-existing product returns 404', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $response = getJson("/api/products/99999");
 

@@ -15,9 +15,10 @@ use function Pest\Laravel\putJson;
 uses(RefreshDatabase::class);
 
 
-test('authinticated user can update a product', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can update a product', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
     Storage::fake('public');
 
     $brand1 = Brand::factory()->create();
@@ -63,6 +64,17 @@ test('authinticated user can update a product', function () {
         'name' => $data['name'],
         'image_url' => Storage::url($product->image_path)
     ]);
+});
+
+test('regular user cannot update a product', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $product = Product::factory()->create();
+
+    $response = putJson("/api/products/{$product->id}", []);
+
+    $response->assertForbidden();
 });
 
 test('guest cannot update a product', function () {

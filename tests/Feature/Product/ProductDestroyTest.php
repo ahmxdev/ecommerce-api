@@ -12,9 +12,10 @@ use function Pest\Laravel\deleteJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can delete a product', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can delete a product', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
     Storage::fake('public');
 
     $product = Product::factory()->create([
@@ -30,7 +31,18 @@ test('authenticated user can delete a product', function () {
     Storage::disk('public')->assertMissing($product->image_path);
 });
 
-test('guest cannot delete a category', function () {
+test('regular user cannot delete a product', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $product = Product::factory()->create();
+
+    $response = deleteJson("/api/products/{$product->id}");
+
+    $response->assertForbidden();
+});
+
+test('guest cannot delete a product', function () {
 
     $response = deleteJson("/api/products/1");
 
