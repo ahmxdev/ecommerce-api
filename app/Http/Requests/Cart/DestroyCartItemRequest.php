@@ -12,9 +12,7 @@ class DestroyCartItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $cartItem = $this->route('cartItem');
-
-        return $cartItem->cart->user_id === $this->user()->id;
+        return true;
     }
 
     /**

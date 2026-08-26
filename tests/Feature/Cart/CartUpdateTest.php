@@ -74,7 +74,7 @@ test('user cannot update another user cart item', function () {
         'quantity' => 5,
     ]);
 
-    $response->assertForbidden();
+    $response->assertNotFound();
 });
 
 test('user cannot update cart item with quantity greater than stock', function () {

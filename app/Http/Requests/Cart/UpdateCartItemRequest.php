@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests\Cart;
 
-use App\Models\Product;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class UpdateCartItemRequest extends FormRequest
@@ -15,9 +13,7 @@ class UpdateCartItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $cartItem = $this->route('cartItem');
-
-        return $cartItem->cart->user_id === $this->user()->id;
+        return true;
     }
 
     /**

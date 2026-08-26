@@ -58,7 +58,7 @@ test('user cannot delete another user cart item', function () {
 
     $response = deleteJson("/api/cart/items/{$cartItem->id}");
 
-    $response->assertForbidden();
+    $response->assertNotFound();
     assertDatabaseHas('cart_items', [
         'id' => $cartItem->id,
     ]);

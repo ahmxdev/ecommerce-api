@@ -8,7 +8,7 @@ use App\Http\Requests\Cart\UpdateCartItemRequest;
 use App\Http\Resources\Cart\CartResource;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Gate;
 
 class CartController
 {
@@ -33,6 +33,8 @@ class CartController
     // public function show(string $id) {}
     public function update(UpdateCartItemRequest $request, CartItem $cartItem)
     {
+        Gate::authorize('update', $cartItem);
+
         $cartItem->update($request->validated());
         return response()->json(
             ['message' => 'item updated'],
@@ -41,6 +43,8 @@ class CartController
     }
     public function destroy(DestroyCartItemRequest $request, CartItem $cartItem)
     {
+        Gate::authorize('delete', $cartItem);
+
         $cartItem->delete();
         return response()->noContent();
     }
