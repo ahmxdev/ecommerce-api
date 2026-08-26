@@ -65,3 +65,30 @@ test('guest cannot update an address', function () {
 
     $response->assertUnauthorized();
 });
+
+test('user cannot update an address owned by another user', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    Sanctum::actingAs($user);
+
+
+    $data = [
+        'country' => 'Egypt',
+        'state' => 'Cairo',
+        'city' => 'Cairo',
+        'district' => 'Nasr City',
+        'street' => 'Abbas El Akkad',
+        'building' => '12',
+        'floor' => '3',
+        'apartment' => '12A',
+        'landmark' => 'Near City Stars',
+    ];
+    $address = Address::factory()->create([
+        'user_id' => $otherUser->id,
+    ]);
+
+    $response = putJson("/api/addresses/{$address->id}", $data);
+
+    $response->assertNotFound();
+});

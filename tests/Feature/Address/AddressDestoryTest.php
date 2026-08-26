@@ -11,7 +11,7 @@ use function Pest\Laravel\deleteJson;
 uses(RefreshDatabase::class);
 
 
-test('authinticated user can delete his addresses', function () {
+test('authenticated user can delete his addresses', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
@@ -32,4 +32,19 @@ test('guest cannot delete an address', function () {
     $response = deleteJson("/api/addresses/1");
 
     $response->assertUnauthorized();
+});
+
+test('user cannot delete an address owned by another user', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    Sanctum::actingAs($user);
+
+    $address = Address::factory()->create([
+        'user_id' => $otherUser->id,
+    ]);
+
+    $response = deleteJson("/api/addresses/{$address->id}");
+
+    $response->assertNotFound();
 });
