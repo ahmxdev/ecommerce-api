@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Coupon;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -11,10 +10,9 @@ use function Pest\Laravel\postJson;
 uses(RefreshDatabase::class);
 
 
-test('authenticated user can create a coupon', function () {
-    $user = User::factory()->create();
-
-    Sanctum::actingAs($user);
+test('admin can create a coupon', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'code' => 'SUMMER20',
@@ -41,6 +39,14 @@ test('authenticated user can create a coupon', function () {
     ]);
 });
 
+test('regular user cannot create a coupon', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = postJson('/api/coupons', []);
+
+    $response->assertForbidden();
+});
 
 test('guest cannot create a coupon', function () {
     $response = postJson('/api/coupons', []);

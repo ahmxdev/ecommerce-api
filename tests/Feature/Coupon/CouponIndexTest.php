@@ -5,15 +5,23 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 
-use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\getJson;
 
 uses(RefreshDatabase::class);
 
 
-test('authinticated user can list coupons', function () {
+test('regular user cannot list coupons', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
+
+    $response = getJson('/api/coupons');
+
+    $response->assertForbidden();
+});
+
+test('admin can list coupons', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $coupons = Coupon::factory()->count(5)->create();
 

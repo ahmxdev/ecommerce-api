@@ -11,10 +11,9 @@ use function Pest\Laravel\putJson;
 uses(RefreshDatabase::class);
 
 
-test('authenticated user can update a coupon', function () {
-    $user = User::factory()->create();
-
-    Sanctum::actingAs($user);
+test('admin can update a coupon', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $coupon = Coupon::factory()->create();
 
@@ -45,6 +44,16 @@ test('authenticated user can update a coupon', function () {
     ]);
 });
 
+test('regular user cannot update a coupon', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $coupon = Coupon::factory()->create();
+
+    $response = putJson("/api/coupons/{$coupon->id}", []);
+
+    $response->assertForbidden();
+});
 
 test('guest cannot update a coupon', function () {
     $response = putJson('/api/coupons/1', []);
