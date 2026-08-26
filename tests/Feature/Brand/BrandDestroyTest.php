@@ -10,9 +10,10 @@ use function Pest\Laravel\deleteJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can delete a brand', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can delete a brand', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
     $brand = Brand::factory()->create();
 
     $response = deleteJson("/api/brands/{$brand->id}");
@@ -31,9 +32,20 @@ test('guest cannot delete a brand', function () {
     $response->assertUnauthorized();
 });
 
-test('authenticated user gets 404 when deleting a non existing brand', function () {
+test('regular user cannot delete a brand', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
+
+    $brand = Brand::factory()->create();
+
+    $response = deleteJson("/api/brands/{$brand->id}");
+
+    $response->assertForbidden();
+});
+
+test('admin gets 404 when deleting a non existing brand', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $response = deleteJson("/api/brands/99999");
 

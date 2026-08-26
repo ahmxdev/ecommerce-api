@@ -9,13 +9,14 @@ use function Pest\Laravel\getJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can list brands', function () {
+test('admin can list brands', function () {
 
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
     $brands = Brand::factory()->count(5)->create();
 
     $response = getJson('/api/brands');
+
     $response->assertOk();
     $response->assertJsonCount(5, 'data');
     $response->assertJsonStructure([
@@ -29,6 +30,16 @@ test('authenticated user can list brands', function () {
     $response->assertJsonFragment([
         'name' => $brands->first()->name,
     ]);
+});
+
+test('regular user cannot list brands', function () {
+
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = getJson('/api/brands');
+
+    $response->assertForbidden();
 });
 
 test('guest cannot list brands', function () {

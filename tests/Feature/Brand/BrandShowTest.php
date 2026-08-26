@@ -9,9 +9,10 @@ use function Pest\Laravel\getJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can view a brand', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can view a brand', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
     $brand = Brand::factory()->create();
 
     $response = getJson("/api/brands/{$brand->id}");
@@ -21,13 +22,25 @@ test('authenticated user can view a brand', function () {
     $response->assertJsonPath('data.name', $brand->name);
 });
 
-test('authenticated user gets 404 when the brand does not exist.', function () {
+test('admin gets 404 when the brand does not exist.', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    $response = getJson('/api/brands/999999');
+
+    $response->assertNotFound();
+});
+
+
+test('regular user cannot view a brand', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
-    $response = getJson("/api/brands/999999");
+    $brand = Brand::factory()->create();
 
-    $response->assertNotFound();
+    $response = getJson("/api/brands/{$brand->id}");
+
+    $response->assertForbidden();
 });
 
 test('guest cannot view a brand', function () {

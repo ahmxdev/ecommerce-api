@@ -10,9 +10,9 @@ use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can create a brand', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can create a brand', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'ASUS',
@@ -27,6 +27,17 @@ test('authenticated user can create a brand', function () {
     $response->assertJsonPath('data.name', $data['name']);
 });
 
+test('regular user cannot create a brand', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $response = postJson('/api/brands', [
+        'name' => 'ASUS',
+    ]);
+
+    $response->assertForbidden();
+});
+
 test('guest cannot create a brand', function () {
     $data = [
         'name' => 'ASUS',
@@ -38,8 +49,8 @@ test('guest cannot create a brand', function () {
 });
 
 test('validation fails when name is missing', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [];
 
@@ -50,8 +61,8 @@ test('validation fails when name is missing', function () {
 });
 
 test('validation fails when name already exists', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'ASUS',

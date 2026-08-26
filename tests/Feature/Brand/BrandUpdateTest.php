@@ -10,9 +10,9 @@ use function Pest\Laravel\putJson;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can update a brand', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can update a brand', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'ASUS',
@@ -31,9 +31,9 @@ test('authenticated user can update a brand', function () {
     $response->assertJsonPath('data.name', $data['name']);
 });
 
-test('authenticated user can keep the same brand name', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+test('admin can keep the same brand name', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'ASUS',
@@ -54,8 +54,8 @@ test('authenticated user can keep the same brand name', function () {
 });
 
 test('validation fails when updating to an existing brand name', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $data = [
         'name' => 'ASUS',
@@ -77,8 +77,8 @@ test('validation fails when updating to an existing brand name', function () {
 });
 
 test('validation fails when name is missing', function () {
-    $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     $brand = Brand::factory()->create();
 
@@ -89,6 +89,19 @@ test('validation fails when name is missing', function () {
     $response->assertJsonValidationErrors([
         'name',
     ]);
+});
+
+test('regular user cannot update a brand', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $brand = Brand::factory()->create();
+
+    $response = putJson("/api/brands/{$brand->id}", [
+        'name' => 'ASUS',
+    ]);
+
+    $response->assertForbidden();
 });
 
 test('guest cannot update a brand', function () {
