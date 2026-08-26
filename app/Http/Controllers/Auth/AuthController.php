@@ -14,6 +14,7 @@ class AuthController
     {
         $validated = $request->validated();
         $user = User::create($validated);
+        $user->cart()->create();
 
         $token = $user->createToken('api-token')->plainTextToken;
 
